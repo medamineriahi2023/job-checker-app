@@ -17,9 +17,8 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
   itemsPerPage: number = 6;
   totalJobs: number = 0;
   verifiedJobs: number = 0;
-  // Make Math available in the template
   Math = Math;
-  
+
   // Sample job data for when API fails
   sampleJobs: Job[] = [
     {
@@ -173,7 +172,7 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
   loadJobs(): void {
     this.isLoading = true;
     this.error = null;
-    
+
     // Simulate API delay
     setTimeout(() => {
       // Try to load from API first
@@ -185,12 +184,10 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
   }
 
   initializeAnimations(): void {
-    // Initialize animations for job cards
     const jobCards = document.querySelectorAll('.job-card');
     jobCards.forEach((card, index) => {
       // Add animation delay based on index
       (card as HTMLElement).style.animationDelay = `${index * 100}ms`;
-      // Add fade-in class to trigger animation
       setTimeout(() => {
         card.classList.add('fade-in');
       }, 100);
@@ -199,19 +196,17 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
 
   applyFilters(): void {
     let filtered = [...this.jobs];
-    
-    // Apply search filter
+
     if (this.searchTerm.trim() !== '') {
       const searchTermLower = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(job => 
-        job.title.toLowerCase().includes(searchTermLower) || 
-        (job.company && job.company.toLowerCase().includes(searchTermLower)) || 
+      filtered = filtered.filter(job =>
+        job.title.toLowerCase().includes(searchTermLower) ||
+        (job.company && job.company.toLowerCase().includes(searchTermLower)) ||
         job.location.toLowerCase().includes(searchTermLower) ||
         job.description.toLowerCase().includes(searchTermLower)
       );
     }
-    
-    // Apply sorting
+
     if (this.sortOption === 'a-z') {
       filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
     } else if (this.sortOption === 'z-a') {
@@ -225,26 +220,22 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
     } else if (this.sortOption === 'salary_low') {
       filtered = filtered.sort((a, b) => this.extractSalary(a.salary) - this.extractSalary(b.salary));
     }
-    
+
     this.filteredJobs = filtered;
     this.totalJobs = this.filteredJobs.length;
-    
-    // Reset to first page when filters change
     this.currentPage = 1;
   }
 
   extractSalary(salaryString?: string): number {
     if (!salaryString) return 0;
-    
-    // Extract numbers from salary string
+
     const numbers = salaryString.match(/\d+/g);
     if (!numbers || numbers.length === 0) return 0;
-    
-    // If range (e.g. $80,000 - $120,000), take average
+
     if (numbers.length > 1) {
       return (parseInt(numbers[0]) + parseInt(numbers[1])) / 2;
     }
-    
+
     return parseInt(numbers[0]);
   }
 
@@ -264,31 +255,25 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
     return Array.from(industries).sort();
   }
 
-  /**
-   * Verifies a job and updates its status
-   */
+
   verifyJob(jobId: number): void {
-    // Skip if already verifying or verified
     const job = this.jobs.find(j => j.id === jobId);
     if (!job || job.isVerifying || job.isVerified) {
       return;
     }
-    
-    // Set loading state for this specific job
+
     job.isVerifying = true;
     this.verificationResults[jobId] = {
       isVerifying: true,
       result: null
     };
-    
-    // Simulate API verification delay
+
     setTimeout(() => {
-      // Simulate API response
       const isFake = Math.random() > 0.7;
-      
+
       job.isVerifying = false;
       job.isVerified = true;
-      
+
       this.verificationResults[jobId] = {
         isVerifying: false,
         result: {
@@ -305,24 +290,19 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
           ]
         }
       };
-      
-      // Update verified jobs count
+
       this.updateVerifiedJobsCount();
-      
-      // Apply animation to the job card
+
       this.applyVerificationAnimation(jobId);
     }, 1500);
   }
-  
-  /**
-   * Updates the count of verified jobs
-   */
+
   updateVerifiedJobsCount(): void {
     this.verifiedJobs = Object.values(this.verificationResults)
       .filter(result => result.result && !result.result.isFake)
       .length;
   }
-  
+
   /**
    * Applies animation to the verified job card
    */
@@ -342,7 +322,6 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
   }
 
   expandDescription(jobId: string): void {
-    // Find the job card
     const jobCard = document.getElementById(`job-card-${jobId}`);
     if (jobCard) {
       jobCard.classList.toggle('expanded');
@@ -353,16 +332,14 @@ export class JobListingsComponent implements OnInit, AfterViewInit {
       this.verifyJob(parseInt(jobId));
     }
   }
-  
+
   handleJobCardClick(event: MouseEvent, jobId: string): void {
-    // Prevent click if target is a button
     if ((event.target as HTMLElement).closest('button')) {
       return;
     }
-    
+
     const job = this.jobs.find(j => j.id === parseInt(jobId));
     if (job) {
-      // For demo purposes, just toggle a verification if not already done
       if (!this.verificationResults[jobId]) {
         this.verifyJob(parseInt(jobId));
       }
