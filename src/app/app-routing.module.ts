@@ -5,8 +5,7 @@ import { JobScraperComponent } from './pages/job-scraper/job-scraper.component';
 import { JobListingsComponent } from './pages/job-listings/job-listings.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'job-form', pathMatch: 'full' },
-  { path: 'job-form', component: JobFormComponent },
+  { path: '', component: JobFormComponent },
   { path: 'job-scraper', component: JobScraperComponent },
   { path: 'job-listings', component: JobListingsComponent },
   { path: '**', redirectTo: 'job-form' }
